@@ -1,0 +1,311 @@
+import { StyleSheet } from "@react-pdf/renderer";
+
+export const COLORS = {
+  navy: "#173a63",
+  red: "#c1272d",
+  text: "#222222",
+  muted: "#5a5a5a",
+  border: "#d5d9e0",
+  tableHead: "#eef1f6",
+  bandLight: "#f7f8fa",
+};
+
+export const styles = StyleSheet.create({
+  page: {
+    paddingTop: 28,
+    paddingBottom: 46,
+    paddingHorizontal: 32,
+    fontSize: 9,
+    fontFamily: "Helvetica",
+    color: COLORS.text,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  logoImg: {
+    width: 56,
+    height: 56,
+    objectFit: "contain",
+  },
+  logoFallback: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 2,
+    borderColor: COLORS.red,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoFallbackText: {
+    fontSize: 13,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+  },
+  companyBlock: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  companyName: {
+    fontSize: 14,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+  },
+  companyLine: {
+    fontSize: 8,
+    color: COLORS.muted,
+    marginTop: 1,
+    maxWidth: 260,
+  },
+  titleBlock: {
+    alignItems: "flex-end",
+  },
+  docTitle: {
+    fontSize: 18,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.red,
+    textTransform: "uppercase",
+  },
+  docSubtitle: {
+    fontSize: 7.5,
+    color: COLORS.muted,
+    marginTop: 2,
+    maxWidth: 200,
+    textAlign: "right",
+  },
+  docMetaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    fontSize: 8,
+    marginTop: 3,
+  },
+  docMetaLabel: {
+    color: COLORS.muted,
+  },
+  divider: {
+    borderBottomWidth: 1.4,
+    borderBottomColor: COLORS.navy,
+    marginBottom: 10,
+  },
+  infoRow: {
+    flexDirection: "row",
+    marginBottom: 10,
+    gap: 10,
+  },
+  infoBox: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    padding: 8,
+  },
+  infoBoxTitle: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 3,
+    textTransform: "uppercase",
+  },
+  infoText: {
+    fontSize: 8.5,
+    marginBottom: 1.5,
+    lineHeight: 1.3,
+  },
+  infoTextBold: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 1.5,
+  },
+  metaTable: {
+    width: "100%",
+  },
+  metaTableRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 3,
+  },
+  table: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 8,
+  },
+  tableHeadRow: {
+    flexDirection: "row",
+    backgroundColor: COLORS.tableHead,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  tableRowLast: {
+    flexDirection: "row",
+  },
+  th: {
+    fontSize: 7.5,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    paddingVertical: 5,
+    paddingHorizontal: 4,
+  },
+  td: {
+    fontSize: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+  },
+  colBorder: {
+    borderRightWidth: 1,
+    borderRightColor: COLORS.border,
+  },
+  totalsWrap: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  totalsBox: {
+    width: 240,
+  },
+  totalsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 2.5,
+    paddingHorizontal: 4,
+  },
+  totalsRowBorder: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  totalsLabel: {
+    fontSize: 8.5,
+    color: COLORS.muted,
+  },
+  totalsValue: {
+    fontSize: 8.5,
+  },
+  grandRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.navy,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderRadius: 2,
+    marginTop: 2,
+  },
+  grandLabel: {
+    fontSize: 9.5,
+    fontFamily: "Helvetica-Bold",
+    color: "#ffffff",
+  },
+  grandValue: {
+    fontSize: 9.5,
+    fontFamily: "Helvetica-Bold",
+    color: "#ffffff",
+  },
+  wordsRow: {
+    flexDirection: "row",
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    padding: 6,
+    backgroundColor: COLORS.bandLight,
+  },
+  wordsLabel: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginRight: 4,
+  },
+  wordsText: {
+    fontSize: 8.5,
+    flex: 1,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 4,
+  },
+  bankBox: {
+    flex: 1.1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    padding: 8,
+  },
+  termsBox: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    padding: 8,
+  },
+  boxTitle: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.navy,
+    marginBottom: 4,
+    textTransform: "uppercase",
+  },
+  bankLine: {
+    flexDirection: "row",
+    fontSize: 7.8,
+    marginBottom: 2,
+  },
+  bankLabel: {
+    width: 78,
+    color: COLORS.muted,
+  },
+  bankValue: {
+    flex: 1,
+    fontFamily: "Helvetica-Bold",
+  },
+  termsText: {
+    fontSize: 7.5,
+    lineHeight: 1.5,
+    color: COLORS.text,
+  },
+  signatureArea: {
+    marginTop: 26,
+    alignItems: "flex-end",
+  },
+  signatureFor: {
+    fontSize: 8.5,
+    fontFamily: "Helvetica-Bold",
+  },
+  signatureSpace: {
+    height: 34,
+  },
+  signatureLabel: {
+    fontSize: 8,
+    color: COLORS.muted,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.text,
+    paddingTop: 3,
+    width: 150,
+    textAlign: "center",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 16,
+    left: 32,
+    right: 32,
+    textAlign: "center",
+    fontSize: 7,
+    color: COLORS.muted,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingTop: 5,
+  },
+  notesBox: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    padding: 8,
+    marginBottom: 10,
+  },
+});
