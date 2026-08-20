@@ -27,11 +27,13 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
   const [showPreview, setShowPreview] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [downloadedFile, setDownloadedFile] = useState<string | null>(null);
 
   const hasItems = data.items.some((i) => i.description.trim().length > 0);
 
   async function handleDownload() {
     setError(null);
+    setDownloadedFile(null);
     if (!data.buyer.name.trim()) {
       setError("Please enter the customer / company name before generating.");
       return;
@@ -80,6 +82,8 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
         const nextNumber = buildSuggestedDocNumber(data.docType, new Date(data.docDate || Date.now()));
         onDocNumberBump(data.docType, nextNumber);
       }
+
+      setDownloadedFile(fileName);
     } catch (e) {
       setError("Something went wrong while generating the PDF. Please check the item details and try again.");
       console.error(e);
@@ -94,8 +98,9 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
         <div>
           <h2 className="text-sm font-semibold text-navy">Generate PDF</h2>
           <p className="text-xs text-slate-500">
-            Downloads as <span className="font-mono text-navy">{data.docNumber || "DOC"}.pdf</span> to your
-            browser&apos;s default download folder.
+            Downloads as <span className="font-mono text-navy">{data.docNumber || "DOC"}.pdf</span>. If your
+            browser is set to &quot;Ask where to save each file&quot;, a Save dialog will pop up - click Save to
+            finish. Otherwise it saves straight to your default Downloads folder.
           </p>
         </div>
         <div className="flex gap-2">
@@ -117,7 +122,13 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
         </div>
       </div>
 
-      {error ? <p className="mt-2 text-xs text-brandred">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs font-medium text-brandred">{error}</p> : null}
+      {downloadedFile ? (
+        <p className="mt-2 text-xs font-medium text-green-700">
+          Done - {downloadedFile} was sent to your browser&apos;s downloads. Check the download bar/notification,
+          or a Save dialog if your browser asks where to save files.
+        </p>
+      ) : null}
 
       {showPreview ? (
         <div className="mt-4 h-[720px] w-full overflow-hidden rounded-md border border-slate-200">
