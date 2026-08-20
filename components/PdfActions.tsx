@@ -56,7 +56,10 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
       document.body.removeChild(link);
       setTimeout(() => URL.revokeObjectURL(url), 5000);
 
-      const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode);
+      const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode, {
+        amount: data.freightAmount,
+        gstRate: data.freightGstRate,
+      });
       const entry: HistoryEntry = {
         id: generateId(),
         docType: data.docType,

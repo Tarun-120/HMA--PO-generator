@@ -9,7 +9,11 @@ interface Props {
   items: LineItem[];
   sellerStateCode: string;
   buyerStateCode: string;
+  freightAmount: number;
+  freightGstRate: number;
   onChange: (items: LineItem[]) => void;
+  onFreightAmountChange: (amount: number) => void;
+  onFreightGstRateChange: (rate: number) => void;
 }
 
 function newItem(): LineItem {
@@ -28,8 +32,20 @@ function newItem(): LineItem {
 const cellInput =
   "w-full rounded border border-slate-300 bg-white px-1.5 py-1 text-xs outline-none focus:border-navy focus:ring-1 focus:ring-navy/30";
 
-export function ItemsTable({ items, sellerStateCode, buyerStateCode, onChange }: Props) {
-  const totals = calculateInvoice(items, sellerStateCode, buyerStateCode || sellerStateCode);
+export function ItemsTable({
+  items,
+  sellerStateCode,
+  buyerStateCode,
+  freightAmount,
+  freightGstRate,
+  onChange,
+  onFreightAmountChange,
+  onFreightGstRateChange,
+}: Props) {
+  const totals = calculateInvoice(items, sellerStateCode, buyerStateCode || sellerStateCode, {
+    amount: freightAmount,
+    gstRate: freightGstRate,
+  });
 
   function updateItem<K extends keyof LineItem>(id: string, key: K, value: LineItem[K]) {
     onChange(items.map((it) => (it.id === id ? { ...it, [key]: value } : it)));
@@ -172,12 +188,43 @@ export function ItemsTable({ items, sellerStateCode, buyerStateCode, onChange }:
         </table>
       </div>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex flex-col items-end gap-3">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-medium text-slate-600">Freight / Forwarding Charges</span>
+          <input
+            type="number"
+            className={cellInput}
+            style={{ width: 110 }}
+            min={0}
+            value={freightAmount}
+            onChange={(e) => onFreightAmountChange(round2(parseFloat(e.target.value) || 0))}
+            placeholder="Amount"
+          />
+          <select
+            className={cellInput}
+            style={{ width: 70 }}
+            value={freightGstRate}
+            onChange={(e) => onFreightGstRateChange(parseFloat(e.target.value))}
+          >
+            {GST_RATES.map((r) => (
+              <option key={r} value={r}>
+                {r}% GST
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="w-full max-w-xs space-y-1 text-sm">
           <div className="flex justify-between text-slate-600">
-            <span>Subtotal</span>
-            <span>Rs. {totals.subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            <span>Items Subtotal</span>
+            <span>Rs. {totals.itemsSubtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
           </div>
+          {totals.freightAmount > 0 ? (
+            <div className="flex justify-between text-slate-600">
+              <span>Freight</span>
+              <span>Rs. {totals.freightAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            </div>
+          ) : null}
           {totals.isIntraState ? (
             <>
               <div className="flex justify-between text-slate-600">

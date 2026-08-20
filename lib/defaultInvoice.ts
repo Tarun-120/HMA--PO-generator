@@ -45,6 +45,8 @@ export function buildDefaultInvoiceData(docType: DocType = "TAX_INVOICE"): Invoi
       email: "",
     },
     items: [blankItem()],
+    freightAmount: 0,
+    freightGstRate: 18,
     notes: "",
     termsAndConditions: DEFAULT_TERMS[docType],
   };

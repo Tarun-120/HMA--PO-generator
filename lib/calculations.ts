@@ -9,9 +9,20 @@ export interface ItemCalc {
   lineTotal: number;
 }
 
+export interface FreightInput {
+  amount: number;
+  gstRate: number;
+}
+
 export interface InvoiceTotals {
   items: ItemCalc[];
   isIntraState: boolean;
+  itemsSubtotal: number;
+  freightAmount: number;
+  freightGstRate: number;
+  freightCgst: number;
+  freightSgst: number;
+  freightIgst: number;
   subtotal: number;
   totalCgst: number;
   totalSgst: number;
@@ -27,7 +38,14 @@ export function round2(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
-export function calculateInvoice(items: LineItem[], sellerStateCode: string, buyerStateCode: string): InvoiceTotals {
+const NO_FREIGHT: FreightInput = { amount: 0, gstRate: 0 };
+
+export function calculateInvoice(
+  items: LineItem[],
+  sellerStateCode: string,
+  buyerStateCode: string,
+  freight: FreightInput = NO_FREIGHT
+): InvoiceTotals {
   const isIntraState = sellerStateCode === buyerStateCode;
 
   const itemCalcs: ItemCalc[] = items.map((item) => {
@@ -51,10 +69,25 @@ export function calculateInvoice(items: LineItem[], sellerStateCode: string, buy
     return { item, taxableValue, cgstAmount, sgstAmount, igstAmount, lineTotal };
   });
 
-  const subtotal = round2(itemCalcs.reduce((s, i) => s + i.taxableValue, 0));
-  const totalCgst = round2(itemCalcs.reduce((s, i) => s + i.cgstAmount, 0));
-  const totalSgst = round2(itemCalcs.reduce((s, i) => s + i.sgstAmount, 0));
-  const totalIgst = round2(itemCalcs.reduce((s, i) => s + i.igstAmount, 0));
+  const itemsSubtotal = round2(itemCalcs.reduce((s, i) => s + i.taxableValue, 0));
+
+  const freightAmount = round2(freight.amount || 0);
+  const freightGstRate = freight.gstRate || 0;
+  const freightGstAmount = round2(freightAmount * (freightGstRate / 100));
+  let freightCgst = 0;
+  let freightSgst = 0;
+  let freightIgst = 0;
+  if (isIntraState) {
+    freightCgst = round2(freightGstAmount / 2);
+    freightSgst = round2(freightGstAmount - freightCgst);
+  } else {
+    freightIgst = freightGstAmount;
+  }
+
+  const subtotal = round2(itemsSubtotal + freightAmount);
+  const totalCgst = round2(itemCalcs.reduce((s, i) => s + i.cgstAmount, 0) + freightCgst);
+  const totalSgst = round2(itemCalcs.reduce((s, i) => s + i.sgstAmount, 0) + freightSgst);
+  const totalIgst = round2(itemCalcs.reduce((s, i) => s + i.igstAmount, 0) + freightIgst);
   const totalTax = round2(totalCgst + totalSgst + totalIgst);
   const grandTotalRaw = round2(subtotal + totalTax);
   const grandTotal = Math.round(grandTotalRaw);
@@ -77,6 +110,12 @@ export function calculateInvoice(items: LineItem[], sellerStateCode: string, buy
   return {
     items: itemCalcs,
     isIntraState,
+    itemsSubtotal,
+    freightAmount,
+    freightGstRate,
+    freightCgst,
+    freightSgst,
+    freightIgst,
     subtotal,
     totalCgst,
     totalSgst,

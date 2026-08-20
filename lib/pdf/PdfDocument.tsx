@@ -31,7 +31,10 @@ export interface PdfDocumentProps {
 }
 
 export function PdfDocument({ data, company, bank, logoDataUrl }: PdfDocumentProps) {
-  const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode);
+  const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode, {
+    amount: data.freightAmount,
+    gstRate: data.freightGstRate,
+  });
   const label = DOC_TYPE_LABEL[data.docType];
 
   return (
@@ -208,9 +211,15 @@ export function PdfDocument({ data, company, bank, logoDataUrl }: PdfDocumentPro
         <View style={styles.totalsWrap}>
           <View style={styles.totalsBox}>
             <View style={styles.totalsRow}>
-              <Text style={styles.totalsLabel}>Subtotal (Taxable Value)</Text>
-              <Text style={styles.totalsValue}>Rs. {fmtMoney(totals.subtotal)}</Text>
+              <Text style={styles.totalsLabel}>Items Subtotal</Text>
+              <Text style={styles.totalsValue}>Rs. {fmtMoney(totals.itemsSubtotal)}</Text>
             </View>
+            {totals.freightAmount > 0 ? (
+              <View style={styles.totalsRow}>
+                <Text style={styles.totalsLabel}>Freight / Forwarding Charges</Text>
+                <Text style={styles.totalsValue}>Rs. {fmtMoney(totals.freightAmount)}</Text>
+              </View>
+            ) : null}
             {totals.isIntraState ? (
               <>
                 <View style={styles.totalsRow}>

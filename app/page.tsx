@@ -43,7 +43,8 @@ export default function Home() {
   useEffect(() => {
     setCompanyState(getCompany());
     setBankState(getBank());
-    setDataState(getDraft() ?? buildDefaultInvoiceData());
+    const draft = getDraft();
+    setDataState(draft ? { ...buildDefaultInvoiceData(draft.docType), ...draft } : buildDefaultInvoiceData());
     setHistory(getHistory());
     setMounted(true);
   }, []);
@@ -89,7 +90,7 @@ export default function Home() {
   }
 
   function handleLoadHistory(entry: HistoryEntry) {
-    setDataState(entry.data);
+    setDataState({ ...buildDefaultInvoiceData(entry.data.docType), ...entry.data });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -146,7 +147,11 @@ export default function Home() {
           items={data.items}
           sellerStateCode={company.stateCode}
           buyerStateCode={data.buyer.stateCode}
+          freightAmount={data.freightAmount}
+          freightGstRate={data.freightGstRate}
           onChange={(items) => setDataState({ ...data, items })}
+          onFreightAmountChange={(freightAmount) => setDataState({ ...data, freightAmount })}
+          onFreightGstRateChange={(freightGstRate) => setDataState({ ...data, freightGstRate })}
         />
         <NotesTerms data={data} onChange={handleDataChange} />
         <PdfActions

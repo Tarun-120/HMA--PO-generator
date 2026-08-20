@@ -67,6 +67,8 @@ export interface InvoiceData {
   poNumber: string;
   buyer: PartyInfo;
   items: LineItem[];
+  freightAmount: number;
+  freightGstRate: number;
   notes: string;
   termsAndConditions: string;
 }
