@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const CANDIDATE_PATHS = ["/logo.png", "/logo.jpg", "/logo.jpeg"];
+const LOGO_CANDIDATES = ["/logo.png", "/logo.jpg", "/logo.jpeg"];
+const SIGNATURE_CANDIDATES = ["/signature.png", "/signature.jpg", "/signature.jpeg"];
 
 async function loadFirstAvailable(paths: string[]): Promise<string | null> {
   for (const path of paths) {
@@ -24,19 +25,28 @@ async function loadFirstAvailable(paths: string[]): Promise<string | null> {
   return null;
 }
 
-export function useLogoDataUrl(path?: string): string | null {
+function useImageDataUrl(candidates: string[]): string | null {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const result = await loadFirstAvailable(path ? [path] : CANDIDATE_PATHS);
+      const result = await loadFirstAvailable(candidates);
       if (!cancelled) setDataUrl(result);
     })();
     return () => {
       cancelled = true;
     };
-  }, [path]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [candidates.join(",")]);
 
   return dataUrl;
+}
+
+export function useLogoDataUrl(): string | null {
+  return useImageDataUrl(LOGO_CANDIDATES);
+}
+
+export function useSignatureDataUrl(): string | null {
+  return useImageDataUrl(SIGNATURE_CANDIDATES);
 }

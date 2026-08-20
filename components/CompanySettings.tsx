@@ -112,7 +112,9 @@ export function CompanySettings({ company, bank, onCompanyChange, onBankChange }
             <p className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-500">
               Logo: place your logo image file as <code className="font-mono text-navy">public/logo.png</code> (or
               <code className="font-mono text-navy"> .jpg</code> / <code className="font-mono text-navy">.jpeg</code>
-              ) in the project folder. It will automatically appear on generated PDFs - no code changes needed.
+              ) in the project folder. Signature: place it as{" "}
+              <code className="font-mono text-navy">public/signature.png</code> (or .jpg / .jpeg). Both appear
+              automatically on generated PDFs - no code changes needed.
             </p>
           </div>
         </div>

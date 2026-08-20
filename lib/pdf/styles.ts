@@ -292,6 +292,11 @@ export const styles = StyleSheet.create({
     marginTop: 26,
     alignItems: "flex-end",
   },
+  signatureImg: {
+    width: 150,
+    height: 36,
+    objectFit: "contain",
+  },
   signatureFor: {
     fontSize: 8.5,
     fontFamily: "Helvetica-Bold",

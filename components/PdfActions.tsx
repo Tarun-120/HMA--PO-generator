@@ -19,11 +19,20 @@ interface Props {
   company: CompanyInfo;
   bank: BankInfo;
   logoDataUrl: string | null;
+  signatureDataUrl: string | null;
   onGenerated: (entry: HistoryEntry) => void;
   onDocNumberBump: (docType: DocType, nextDocNumber: string) => void;
 }
 
-export default function PdfActions({ data, company, bank, logoDataUrl, onGenerated, onDocNumberBump }: Props) {
+export default function PdfActions({
+  data,
+  company,
+  bank,
+  logoDataUrl,
+  signatureDataUrl,
+  onGenerated,
+  onDocNumberBump,
+}: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +54,13 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
     setGenerating(true);
     try {
       const blob = await pdf(
-        <PdfDocument data={data} company={company} bank={bank} logoDataUrl={logoDataUrl} />
+        <PdfDocument
+          data={data}
+          company={company}
+          bank={bank}
+          logoDataUrl={logoDataUrl}
+          signatureDataUrl={signatureDataUrl}
+        />
       ).toBlob();
 
       const fileName = `${data.docNumber}.pdf`;
@@ -133,7 +148,13 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
       {showPreview ? (
         <div className="mt-4 h-[720px] w-full overflow-hidden rounded-md border border-slate-200">
           <PDFViewer width="100%" height="100%" showToolbar={false}>
-            <PdfDocument data={data} company={company} bank={bank} logoDataUrl={logoDataUrl} />
+            <PdfDocument
+              data={data}
+              company={company}
+              bank={bank}
+              logoDataUrl={logoDataUrl}
+              signatureDataUrl={signatureDataUrl}
+            />
           </PDFViewer>
         </div>
       ) : null}

@@ -23,7 +23,7 @@ import {
   saveDraft,
 } from "@/lib/storage";
 import { BankInfo, CompanyInfo, DocType, HistoryEntry, InvoiceData } from "@/lib/types";
-import { useLogoDataUrl } from "@/lib/useLogoDataUrl";
+import { useLogoDataUrl, useSignatureDataUrl } from "@/lib/useImageDataUrl";
 
 const PdfActions = dynamic(() => import("@/components/PdfActions"), {
   ssr: false,
@@ -42,6 +42,7 @@ export default function Home() {
   const [data, setDataState] = useState<InvoiceData | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const logoDataUrl = useLogoDataUrl();
+  const signatureDataUrl = useSignatureDataUrl();
 
   useEffect(() => {
     setCompanyState(getCompany());
@@ -112,7 +113,15 @@ export default function Home() {
     const mod = await import("@react-pdf/renderer");
     const { PdfDocument } = await import("@/lib/pdf/PdfDocument");
     const blob = await mod
-      .pdf(<PdfDocument data={entry.data} company={company} bank={bank} logoDataUrl={logoDataUrl} />)
+      .pdf(
+        <PdfDocument
+          data={entry.data}
+          company={company}
+          bank={bank}
+          logoDataUrl={logoDataUrl}
+          signatureDataUrl={signatureDataUrl}
+        />
+      )
       .toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -181,6 +190,7 @@ export default function Home() {
           company={company}
           bank={bank}
           logoDataUrl={logoDataUrl}
+          signatureDataUrl={signatureDataUrl}
           onGenerated={handleGenerated}
           onDocNumberBump={handleDocNumberBump}
         />
