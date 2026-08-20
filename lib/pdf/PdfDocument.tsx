@@ -28,10 +28,9 @@ export interface PdfDocumentProps {
   company: CompanyInfo;
   bank: BankInfo;
   logoDataUrl: string | null;
-  signatureDataUrl: string | null;
 }
 
-export function PdfDocument({ data, company, bank, logoDataUrl, signatureDataUrl }: PdfDocumentProps) {
+export function PdfDocument({ data, company, bank, logoDataUrl }: PdfDocumentProps) {
   const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode, {
     amount: data.freightAmount,
     gstRate: data.freightGstRate,
@@ -308,15 +307,9 @@ export function PdfDocument({ data, company, bank, logoDataUrl, signatureDataUrl
             <Text style={styles.boxTitle}>Terms &amp; Conditions</Text>
             <Text style={styles.termsText}>{data.termsAndConditions}</Text>
             <View style={styles.signatureArea}>
-              {signatureDataUrl ? (
-                <Image src={signatureDataUrl} style={styles.signatureImg} />
-              ) : (
-                <>
-                  <Text style={styles.signatureFor}>For {company.tradeName}</Text>
-                  <View style={styles.signatureSpace} />
-                  <Text style={styles.signatureLabel}>Authorised Signatory</Text>
-                </>
-              )}
+              <Text style={styles.signatureFor}>For {company.tradeName}</Text>
+              <View style={styles.signatureSpace} />
+              <Text style={styles.signatureLabel}>Authorised Signatory</Text>
             </View>
           </View>
         </View>

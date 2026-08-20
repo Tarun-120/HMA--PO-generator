@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 const LOGO_CANDIDATES = ["/logo.png", "/logo.jpg", "/logo.jpeg"];
-const SIGNATURE_CANDIDATES = ["/signature.png", "/signature.jpg", "/signature.jpeg"];
 
 async function loadFirstAvailable(paths: string[]): Promise<string | null> {
   for (const path of paths) {
@@ -25,28 +24,19 @@ async function loadFirstAvailable(paths: string[]): Promise<string | null> {
   return null;
 }
 
-function useImageDataUrl(candidates: string[]): string | null {
+export function useLogoDataUrl(): string | null {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const result = await loadFirstAvailable(candidates);
+      const result = await loadFirstAvailable(LOGO_CANDIDATES);
       if (!cancelled) setDataUrl(result);
     })();
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [candidates.join(",")]);
+  }, []);
 
   return dataUrl;
-}
-
-export function useLogoDataUrl(): string | null {
-  return useImageDataUrl(LOGO_CANDIDATES);
-}
-
-export function useSignatureDataUrl(): string | null {
-  return useImageDataUrl(SIGNATURE_CANDIDATES);
 }
