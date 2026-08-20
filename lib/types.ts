@@ -66,6 +66,8 @@ export interface InvoiceData {
   validUntil: string;
   poNumber: string;
   buyer: PartyInfo;
+  shipSameAsBill: boolean;
+  shipTo: PartyInfo;
   items: LineItem[];
   freightAmount: number;
   freightGstRate: number;

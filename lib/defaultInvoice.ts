@@ -1,7 +1,19 @@
 import { DEFAULT_TERMS } from "./constants";
 import { generateId } from "./id";
 import { buildSuggestedDocNumber } from "./storage";
-import { DocType, InvoiceData, LineItem } from "./types";
+import { DocType, InvoiceData, LineItem, PartyInfo } from "./types";
+
+function blankParty(): PartyInfo {
+  return {
+    name: "",
+    address: "",
+    gstin: "",
+    state: "",
+    stateCode: "",
+    phone: "",
+    email: "",
+  };
+}
 
 function blankItem(): LineItem {
   return {
@@ -35,15 +47,9 @@ export function buildDefaultInvoiceData(docType: DocType = "TAX_INVOICE"): Invoi
     dueDate: addDaysISO(15),
     validUntil: addDaysISO(15),
     poNumber: "",
-    buyer: {
-      name: "",
-      address: "",
-      gstin: "",
-      state: "",
-      stateCode: "",
-      phone: "",
-      email: "",
-    },
+    buyer: blankParty(),
+    shipSameAsBill: true,
+    shipTo: blankParty(),
     items: [blankItem()],
     freightAmount: 0,
     freightGstRate: 18,

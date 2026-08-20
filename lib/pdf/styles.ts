@@ -118,6 +118,25 @@ export const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     marginBottom: 1.5,
   },
+  metaStrip: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 3,
+    backgroundColor: COLORS.bandLight,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    marginBottom: 10,
+  },
+  metaStripItem: {
+    fontSize: 7.8,
+    color: COLORS.muted,
+  },
+  metaStripValue: {
+    fontFamily: "Helvetica-Bold",
+    color: COLORS.text,
+  },
   metaTable: {
     width: "100%",
   },

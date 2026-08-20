@@ -122,28 +122,41 @@ export function PdfDocument({ data, company, bank, logoDataUrl }: PdfDocumentPro
             {data.buyer.email ? <Text style={styles.infoText}>Email: {data.buyer.email}</Text> : null}
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoBoxTitle}>Supply Details</Text>
-            <View style={styles.metaTable}>
-              <View style={styles.metaTableRow}>
-                <Text style={styles.infoText}>Place of Supply</Text>
-                <Text style={styles.infoText}>
-                  {data.buyer.state || company.state} ({data.buyer.stateCode || company.stateCode})
-                </Text>
-              </View>
-              <View style={styles.metaTableRow}>
-                <Text style={styles.infoText}>Tax Type</Text>
-                <Text style={styles.infoText}>{totals.isIntraState ? "CGST + SGST" : "IGST"}</Text>
-              </View>
-              <View style={styles.metaTableRow}>
-                <Text style={styles.infoText}>Reverse Charge</Text>
-                <Text style={styles.infoText}>No</Text>
-              </View>
-              <View style={styles.metaTableRow}>
-                <Text style={styles.infoText}>Total Items</Text>
-                <Text style={styles.infoText}>{data.items.length}</Text>
-              </View>
-            </View>
+            <Text style={styles.infoBoxTitle}>Shipment To</Text>
+            {data.shipSameAsBill ? (
+              <Text style={styles.infoText}>Same as Bill To address.</Text>
+            ) : (
+              <>
+                <Text style={styles.infoTextBold}>{data.shipTo.name || "-"}</Text>
+                <Text style={styles.infoText}>{data.shipTo.address || "-"}</Text>
+                {data.shipTo.state ? (
+                  <Text style={styles.infoText}>
+                    State: {data.shipTo.state} {data.shipTo.stateCode ? `(${data.shipTo.stateCode})` : ""}
+                  </Text>
+                ) : null}
+                {data.shipTo.gstin ? <Text style={styles.infoText}>GSTIN: {data.shipTo.gstin}</Text> : null}
+                {data.shipTo.phone ? <Text style={styles.infoText}>Phone: {data.shipTo.phone}</Text> : null}
+                {data.shipTo.email ? <Text style={styles.infoText}>Email: {data.shipTo.email}</Text> : null}
+              </>
+            )}
           </View>
+        </View>
+
+        <View style={styles.metaStrip}>
+          <Text style={styles.metaStripItem}>
+            Place of Supply: <Text style={styles.metaStripValue}>
+              {data.buyer.state || company.state} ({data.buyer.stateCode || company.stateCode})
+            </Text>
+          </Text>
+          <Text style={styles.metaStripItem}>
+            Tax Type: <Text style={styles.metaStripValue}>{totals.isIntraState ? "CGST + SGST" : "IGST"}</Text>
+          </Text>
+          <Text style={styles.metaStripItem}>
+            Reverse Charge: <Text style={styles.metaStripValue}>No</Text>
+          </Text>
+          <Text style={styles.metaStripItem}>
+            Total Items: <Text style={styles.metaStripValue}>{data.items.length}</Text>
+          </Text>
         </View>
 
         {/* Items Table */}
