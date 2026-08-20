@@ -6,7 +6,9 @@ import { CompanySettings } from "@/components/CompanySettings";
 import { DocumentDetails } from "@/components/DocumentDetails";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { ItemsTable } from "@/components/ItemsTable";
+import { LoginScreen } from "@/components/LoginScreen";
 import { NotesTerms } from "@/components/NotesTerms";
+import { isLoggedIn, logout } from "@/lib/auth";
 import { DEFAULT_BANK, DEFAULT_COMPANY, DEFAULT_TERMS } from "@/lib/constants";
 import { buildDefaultInvoiceData } from "@/lib/defaultInvoice";
 import {
@@ -34,6 +36,7 @@ const PdfActions = dynamic(() => import("@/components/PdfActions"), {
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const [company, setCompanyState] = useState<CompanyInfo>(DEFAULT_COMPANY);
   const [bank, setBankState] = useState<BankInfo>(DEFAULT_BANK);
   const [data, setDataState] = useState<InvoiceData | null>(null);
@@ -46,8 +49,14 @@ export default function Home() {
     const draft = getDraft();
     setDataState(draft ? { ...buildDefaultInvoiceData(draft.docType), ...draft } : buildDefaultInvoiceData());
     setHistory(getHistory());
+    setAuthed(isLoggedIn());
     setMounted(true);
   }, []);
+
+  function handleLogout() {
+    logout();
+    setAuthed(false);
+  }
 
   useEffect(() => {
     if (mounted && data) saveDraft(data);
@@ -121,6 +130,10 @@ export default function Home() {
     );
   }
 
+  if (!authed) {
+    return <LoginScreen onSuccess={() => setAuthed(true)} />;
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -131,13 +144,22 @@ export default function Home() {
             entirely in your browser - nothing is sent to a server.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleNewDocument}
-          className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
-        >
-          + New Document
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleNewDocument}
+            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          >
+            + New Document
+          </button>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <div className="space-y-5">
