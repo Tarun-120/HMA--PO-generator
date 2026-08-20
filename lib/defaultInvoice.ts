@@ -1,10 +1,11 @@
 import { DEFAULT_TERMS } from "./constants";
+import { generateId } from "./id";
 import { buildSuggestedDocNumber } from "./storage";
 import { DocType, InvoiceData, LineItem } from "./types";
 
 function blankItem(): LineItem {
   return {
-    id: typeof crypto !== "undefined" ? crypto.randomUUID() : String(Math.random()),
+    id: generateId(),
     description: "",
     hsnSac: "",
     qty: 1,

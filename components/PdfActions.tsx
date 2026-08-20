@@ -3,6 +3,7 @@
 import { pdf, PDFViewer } from "@react-pdf/renderer";
 import { useState } from "react";
 import { calculateInvoice } from "@/lib/calculations";
+import { generateId } from "@/lib/id";
 import { PdfDocument } from "@/lib/pdf/PdfDocument";
 import { BankInfo, CompanyInfo, DocType, HistoryEntry, InvoiceData } from "@/lib/types";
 import {
@@ -57,7 +58,7 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
 
       const totals = calculateInvoice(data.items, company.stateCode, data.buyer.stateCode || company.stateCode);
       const entry: HistoryEntry = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         docType: data.docType,
         docNumber: data.docNumber,
         docDate: data.docDate,

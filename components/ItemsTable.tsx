@@ -2,6 +2,7 @@
 
 import { GST_RATES, UNITS } from "@/lib/constants";
 import { calculateInvoice, round2 } from "@/lib/calculations";
+import { generateId } from "@/lib/id";
 import { LineItem } from "@/lib/types";
 
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 
 function newItem(): LineItem {
   return {
-    id: crypto.randomUUID(),
+    id: generateId(),
     description: "",
     hsnSac: "",
     qty: 1,
