@@ -9,17 +9,18 @@ interface Props {
   onChange: (data: InvoiceData) => void;
 }
 
-const DOC_TYPES: DocType[] = ["TAX_INVOICE", "PROFORMA_INVOICE", "QUOTATION"];
+const DOC_TYPES: DocType[] = ["TAX_INVOICE", "PROFORMA_INVOICE", "QUOTATION", "PURCHASE_ORDER"];
 
 interface PartyFieldsProps {
   party: PartyInfo;
+  nameLabel?: string;
   onFieldChange: <K extends keyof PartyInfo>(key: K, value: PartyInfo[K]) => void;
 }
 
-function PartyFields({ party, onFieldChange }: PartyFieldsProps) {
+function PartyFields({ party, nameLabel = "Customer / Company Name", onFieldChange }: PartyFieldsProps) {
   return (
     <>
-      <Field label="Customer / Company Name">
+      <Field label={nameLabel}>
         <TextInput value={party.name} onChange={(e) => onFieldChange("name", e.target.value)} />
       </Field>
       <Field label="Phone">
@@ -113,22 +114,39 @@ export function DocumentDetails({ data, onChange }: Props) {
             <TextInput type="date" value={data.validUntil} onChange={(e) => setField("validUntil", e.target.value)} />
           </Field>
         ) : null}
-        <Field label="PO / Reference No. (optional)">
-          <TextInput value={data.poNumber} onChange={(e) => setField("poNumber", e.target.value)} />
-        </Field>
+        {data.docType === "PURCHASE_ORDER" ? (
+          <Field label="Expected Delivery Date">
+            <TextInput type="date" value={data.dueDate} onChange={(e) => setField("dueDate", e.target.value)} />
+          </Field>
+        ) : null}
+        {data.docType !== "PURCHASE_ORDER" && data.docType !== "QUOTATION" ? (
+          <Field label="PO / Reference No. (optional)">
+            <TextInput value={data.poNumber} onChange={(e) => setField("poNumber", e.target.value)} />
+          </Field>
+        ) : null}
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <h3 className="col-span-full text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {data.docType === "QUOTATION" ? "Quoted To (Customer)" : "Bill To (Customer)"}
+            {data.docType === "PURCHASE_ORDER"
+              ? "Vendor / Supplier"
+              : data.docType === "QUOTATION"
+                ? "Quoted To (Customer)"
+                : "Bill To (Customer)"}
           </h3>
-          <PartyFields party={data.buyer} onFieldChange={setBuyerField} />
+          <PartyFields
+            party={data.buyer}
+            nameLabel={data.docType === "PURCHASE_ORDER" ? "Vendor / Company Name" : "Customer / Company Name"}
+            onFieldChange={setBuyerField}
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="col-span-full flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Shipment To</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {data.docType === "PURCHASE_ORDER" ? "Deliver To" : "Shipment To"}
+            </h3>
             <label className="flex items-center gap-1.5 text-xs text-slate-500">
               <input
                 type="checkbox"
@@ -136,16 +154,21 @@ export function DocumentDetails({ data, onChange }: Props) {
                 onChange={(e) => setField("shipSameAsBill", e.target.checked)}
                 className="h-3.5 w-3.5 rounded border-slate-300 text-navy focus:ring-navy/30"
               />
-              Same as Bill To
+              {data.docType === "PURCHASE_ORDER" ? "Same as Vendor" : "Same as Bill To"}
             </label>
           </div>
           {data.shipSameAsBill ? (
             <p className="col-span-full rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-500">
-              Shipment address will be printed same as the Bill To details above. Uncheck &quot;Same as Bill
-              To&quot; to enter a different shipping address.
+              {data.docType === "PURCHASE_ORDER"
+                ? 'Delivery address will be printed same as the vendor details above. Uncheck "Same as Vendor" to enter a different delivery address.'
+                : 'Shipment address will be printed same as the Bill To details above. Uncheck "Same as Bill To" to enter a different shipping address.'}
             </p>
           ) : (
-            <PartyFields party={data.shipTo} onFieldChange={setShipToField} />
+            <PartyFields
+              party={data.shipTo}
+              nameLabel={data.docType === "PURCHASE_ORDER" ? "Vendor / Company Name" : "Customer / Company Name"}
+              onFieldChange={setShipToField}
+            />
           )}
         </div>
       </div>

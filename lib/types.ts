@@ -1,15 +1,17 @@
-export type DocType = "TAX_INVOICE" | "PROFORMA_INVOICE" | "QUOTATION";
+export type DocType = "TAX_INVOICE" | "PROFORMA_INVOICE" | "QUOTATION" | "PURCHASE_ORDER";
 
 export const DOC_TYPE_LABEL: Record<DocType, string> = {
   TAX_INVOICE: "Tax Invoice",
   PROFORMA_INVOICE: "Proforma Invoice",
   QUOTATION: "Quotation",
+  PURCHASE_ORDER: "Purchase Order",
 };
 
 export const DOC_TYPE_PREFIX: Record<DocType, string> = {
   TAX_INVOICE: "INV",
   PROFORMA_INVOICE: "PI",
   QUOTATION: "QUO",
+  PURCHASE_ORDER: "PO",
 };
 
 export interface CompanyInfo {
@@ -47,6 +49,12 @@ export interface PartyInfo {
   email: string;
 }
 
+export interface PreparedByInfo {
+  name: string;
+  phone: string;
+  email: string;
+}
+
 export interface LineItem {
   id: string;
   description: string;
@@ -73,6 +81,7 @@ export interface InvoiceData {
   freightGstRate: number;
   notes: string;
   termsAndConditions: string;
+  preparedBy: PreparedByInfo;
 }
 
 export interface HistoryEntry {
@@ -84,4 +93,5 @@ export interface HistoryEntry {
   grandTotal: number;
   data: InvoiceData;
   createdAt: string;
+  revision: number;
 }

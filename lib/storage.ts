@@ -81,11 +81,21 @@ export function commitSeq(docType: DocType, fyCode: string, usedSeq: number) {
   }
 }
 
+const COMPANY_CODE = "HMA";
+
 export function buildSuggestedDocNumber(docType: DocType, date: Date): string {
   const fyCode = getFinancialYearCode(date);
   const seq = peekNextSeq(docType, fyCode);
   const prefix = DOC_TYPE_PREFIX[docType];
-  return `${prefix}-${fyCode}-${String(seq).padStart(5, "0")}`;
+  return `${prefix}/${COMPANY_CODE}/${fyCode}/${String(seq).padStart(4, "0")}`;
+}
+
+export function resolveDocDate(docDate: string): Date {
+  return docDate ? new Date(docDate) : new Date();
+}
+
+export function docNumberToFileName(docNumber: string): string {
+  return docNumber.replace(/[\\/:*?"<>|]/g, "-");
 }
 
 export function parseSeqFromDocNumber(docNumber: string): number | null {
@@ -96,6 +106,10 @@ export function parseSeqFromDocNumber(docNumber: string): number | null {
 
 export function getHistory(): HistoryEntry[] {
   return safeGet<HistoryEntry[]>(KEYS.history, []);
+}
+
+export function withRevisionPrefix(docNumber: string, revision: number): string {
+  return revision > 0 ? `R${revision}-${docNumber}` : docNumber;
 }
 
 export function addHistoryEntry(entry: HistoryEntry) {

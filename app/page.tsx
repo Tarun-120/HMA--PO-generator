@@ -4,15 +4,18 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { CompanySettings } from "@/components/CompanySettings";
 import { DocumentDetails } from "@/components/DocumentDetails";
+import { GeneralPoTerms } from "@/components/GeneralPoTerms";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { ItemsTable } from "@/components/ItemsTable";
 import { LoginScreen } from "@/components/LoginScreen";
-import { NotesTerms } from "@/components/NotesTerms";
+import { PreparedBy } from "@/components/PreparedBy";
+import { TermsConditions } from "@/components/TermsConditions";
 import { isLoggedIn, logout } from "@/lib/auth";
 import { DEFAULT_BANK, DEFAULT_COMPANY, DEFAULT_TERMS } from "@/lib/constants";
 import { buildDefaultInvoiceData } from "@/lib/defaultInvoice";
 import {
   buildSuggestedDocNumber,
+  docNumberToFileName,
   getBank,
   getCompany,
   getDraft,
@@ -21,6 +24,7 @@ import {
   saveBank,
   saveCompany,
   saveDraft,
+  withRevisionPrefix,
 } from "@/lib/storage";
 import { BankInfo, CompanyInfo, DocType, HistoryEntry, InvoiceData } from "@/lib/types";
 import { useLogoDataUrl } from "@/lib/useImageDataUrl";
@@ -111,13 +115,15 @@ export default function Home() {
   async function handleRedownload(entry: HistoryEntry) {
     const mod = await import("@react-pdf/renderer");
     const { PdfDocument } = await import("@/lib/pdf/PdfDocument");
+    const displayDocNumber = withRevisionPrefix(entry.docNumber, entry.revision);
+    const displayData = entry.revision > 0 ? { ...entry.data, docNumber: displayDocNumber } : entry.data;
     const blob = await mod
-      .pdf(<PdfDocument data={entry.data} company={company} bank={bank} logoDataUrl={logoDataUrl} />)
+      .pdf(<PdfDocument data={displayData} company={company} bank={bank} logoDataUrl={logoDataUrl} />)
       .toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${entry.docNumber}.pdf`;
+    link.download = `${docNumberToFileName(displayDocNumber)}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -140,8 +146,8 @@ export default function Home() {
         <div>
           <h1 className="text-xl font-bold text-navy">HMA Billing Studio</h1>
           <p className="text-sm text-slate-500">
-            Create Proforma Invoices, Quotations and Tax Invoices for Hindustan Machines &amp; Automation. Runs
-            entirely in your browser - nothing is sent to a server.
+            Create Proforma Invoices, Quotations, Tax Invoices and Purchase Orders for Hindustan Machines &amp;
+            Automation. Runs entirely in your browser - nothing is sent to a server.
           </p>
         </div>
         <div className="flex gap-2">
@@ -165,6 +171,7 @@ export default function Home() {
       <div className="space-y-5">
         <CompanySettings company={company} bank={bank} onCompanyChange={setCompany} onBankChange={setBank} />
         <DocumentDetails data={data} onChange={handleDataChange} />
+        <PreparedBy data={data} onChange={handleDataChange} />
         <ItemsTable
           items={data.items}
           sellerStateCode={company.stateCode}
@@ -175,12 +182,14 @@ export default function Home() {
           onFreightAmountChange={(freightAmount) => setDataState({ ...data, freightAmount })}
           onFreightGstRateChange={(freightGstRate) => setDataState({ ...data, freightGstRate })}
         />
-        <NotesTerms data={data} onChange={handleDataChange} />
+        <TermsConditions data={data} onChange={handleDataChange} />
+        {data.docType === "PURCHASE_ORDER" ? <GeneralPoTerms /> : null}
         <PdfActions
           data={data}
           company={company}
           bank={bank}
           logoDataUrl={logoDataUrl}
+          history={history}
           onGenerated={handleGenerated}
           onDocNumberBump={handleDocNumberBump}
         />

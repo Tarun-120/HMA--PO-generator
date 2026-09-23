@@ -1,5 +1,6 @@
 "use client";
 
+import { withRevisionPrefix } from "@/lib/storage";
 import { DOC_TYPE_LABEL, HistoryEntry } from "@/lib/types";
 
 interface Props {
@@ -38,7 +39,7 @@ export function HistoryPanel({ history, onLoad, onRedownload, onDelete }: Props)
             {history.map((h) => (
               <tr key={h.id} className="border-b border-slate-100">
                 <td className="py-1.5 pr-2">{DOC_TYPE_LABEL[h.docType]}</td>
-                <td className="py-1.5 pr-2 font-medium">{h.docNumber}</td>
+                <td className="py-1.5 pr-2 font-medium">{withRevisionPrefix(h.docNumber, h.revision)}</td>
                 <td className="py-1.5 pr-2">{h.docDate}</td>
                 <td className="py-1.5 pr-2">{h.buyerName || "-"}</td>
                 <td className="py-1.5 pr-2 text-right">

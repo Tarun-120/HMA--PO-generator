@@ -48,12 +48,13 @@ export function buildDefaultInvoiceData(docType: DocType = "TAX_INVOICE"): Invoi
     validUntil: addDaysISO(15),
     poNumber: "",
     buyer: blankParty(),
-    shipSameAsBill: true,
+    shipSameAsBill: docType !== "PURCHASE_ORDER",
     shipTo: blankParty(),
     items: [blankItem()],
     freightAmount: 0,
     freightGstRate: 18,
     notes: "",
     termsAndConditions: DEFAULT_TERMS[docType],
+    preparedBy: { name: "", phone: "", email: "" },
   };
 }

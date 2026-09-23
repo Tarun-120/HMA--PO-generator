@@ -10,8 +10,11 @@ import {
   addHistoryEntry,
   buildSuggestedDocNumber,
   commitSeq,
+  docNumberToFileName,
   getFinancialYearCode,
   parseSeqFromDocNumber,
+  resolveDocDate,
+  withRevisionPrefix,
 } from "@/lib/storage";
 
 interface Props {
@@ -19,23 +22,44 @@ interface Props {
   company: CompanyInfo;
   bank: BankInfo;
   logoDataUrl: string | null;
+  history: HistoryEntry[];
   onGenerated: (entry: HistoryEntry) => void;
   onDocNumberBump: (docType: DocType, nextDocNumber: string) => void;
 }
 
-export default function PdfActions({ data, company, bank, logoDataUrl, onGenerated, onDocNumberBump }: Props) {
+export default function PdfActions({
+  data,
+  company,
+  bank,
+  logoDataUrl,
+  history,
+  onGenerated,
+  onDocNumberBump,
+}: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [downloadedFile, setDownloadedFile] = useState<string | null>(null);
 
   const hasItems = data.items.some((i) => i.description.trim().length > 0);
+  const isQuotation = data.docType === "QUOTATION";
+
+  const existingEntry = isQuotation
+    ? history.find((h) => h.docType === data.docType && h.docNumber === data.docNumber)
+    : undefined;
+  const revision = existingEntry ? (existingEntry.revision || 0) + 1 : 0;
+  const displayDocNumber = withRevisionPrefix(data.docNumber, revision);
+  const previewData = revision > 0 ? { ...data, docNumber: displayDocNumber } : data;
 
   async function handleDownload() {
     setError(null);
     setDownloadedFile(null);
     if (!data.buyer.name.trim()) {
-      setError("Please enter the customer / company name before generating.");
+      setError(
+        data.docType === "PURCHASE_ORDER"
+          ? "Please enter the vendor / company name before generating."
+          : "Please enter the customer / company name before generating."
+      );
       return;
     }
     if (!hasItems) {
@@ -45,10 +69,10 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
     setGenerating(true);
     try {
       const blob = await pdf(
-        <PdfDocument data={data} company={company} bank={bank} logoDataUrl={logoDataUrl} />
+        <PdfDocument data={previewData} company={company} bank={bank} logoDataUrl={logoDataUrl} />
       ).toBlob();
 
-      const fileName = `${data.docNumber}.pdf`;
+      const fileName = `${docNumberToFileName(displayDocNumber)}.pdf`;
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -71,16 +95,20 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
         grandTotal: totals.grandTotal,
         data,
         createdAt: new Date().toISOString(),
+        revision,
       };
       addHistoryEntry(entry);
       onGenerated(entry);
 
       const usedSeq = parseSeqFromDocNumber(data.docNumber);
       if (usedSeq !== null) {
-        const fyCode = getFinancialYearCode(new Date(data.docDate || Date.now()));
+        const effectiveDate = resolveDocDate(data.docDate);
+        const fyCode = getFinancialYearCode(effectiveDate);
         commitSeq(data.docType, fyCode, usedSeq);
-        const nextNumber = buildSuggestedDocNumber(data.docType, new Date(data.docDate || Date.now()));
-        onDocNumberBump(data.docType, nextNumber);
+        if (!isQuotation) {
+          const nextNumber = buildSuggestedDocNumber(data.docType, effectiveDate);
+          onDocNumberBump(data.docType, nextNumber);
+        }
       }
 
       setDownloadedFile(fileName);
@@ -98,10 +126,16 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
         <div>
           <h2 className="text-sm font-semibold text-navy">Generate PDF</h2>
           <p className="text-xs text-slate-500">
-            Downloads as <span className="font-mono text-navy">{data.docNumber || "DOC"}.pdf</span>. If your
-            browser is set to &quot;Ask where to save each file&quot;, a Save dialog will pop up - click Save to
-            finish. Otherwise it saves straight to your default Downloads folder.
+            Downloads as{" "}
+            <span className="font-mono text-navy">{docNumberToFileName(displayDocNumber) || "DOC"}.pdf</span>. If
+            your browser is set to &quot;Ask where to save each file&quot;, a Save dialog will pop up - click Save
+            to finish. Otherwise it saves straight to your default Downloads folder.
           </p>
+          {revision > 0 ? (
+            <p className="mt-1 text-xs font-medium text-amber-700">
+              This quotation was generated before - downloading again will mark it as revision R{revision}.
+            </p>
+          ) : null}
         </div>
         <div className="flex gap-2">
           <button
@@ -133,7 +167,7 @@ export default function PdfActions({ data, company, bank, logoDataUrl, onGenerat
       {showPreview ? (
         <div className="mt-4 h-[720px] w-full overflow-hidden rounded-md border border-slate-200">
           <PDFViewer width="100%" height="100%" showToolbar={false}>
-            <PdfDocument data={data} company={company} bank={bank} logoDataUrl={logoDataUrl} />
+            <PdfDocument data={previewData} company={company} bank={bank} logoDataUrl={logoDataUrl} />
           </PDFViewer>
         </div>
       ) : null}
