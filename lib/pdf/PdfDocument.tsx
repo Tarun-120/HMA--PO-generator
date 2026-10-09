@@ -503,13 +503,6 @@ export function PdfDocument({ data, company, bank, logoDataUrl }: PdfDocumentPro
               <Text style={styles.wordsText}>{amountInWordsINR(totals.grandTotal)}</Text>
             </View>
 
-            {data.notes ? (
-              <View style={styles.notesBox}>
-                <Text style={styles.boxTitle}>Notes</Text>
-                <Text style={styles.termsText}>{data.notes}</Text>
-              </View>
-            ) : null}
-
             {/* Bank + Terms */}
             <View style={styles.bottomRow}>
               <View style={styles.bankBox}>

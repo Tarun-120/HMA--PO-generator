@@ -482,13 +482,6 @@ export const styles = StyleSheet.create({
     color: COLORS.muted,
     marginTop: 8,
   },
-  notesBox: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 3,
-    padding: 8,
-    marginBottom: 10,
-  },
   generalTermsBox: {
     borderWidth: 1,
     borderColor: COLORS.border,
